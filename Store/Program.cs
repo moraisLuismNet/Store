@@ -1,19 +1,23 @@
 using Microsoft.EntityFrameworkCore;
 using Store.Models;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Add services to the container.
+
+builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+string connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ??
+                            builder.Configuration.GetConnectionString("DefaultConnection");
+
 
 builder.Services.AddDbContext<StoreContext>(options =>
 {
     options.UseSqlServer(connectionString);
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 }
 );
 
-// Add services to the container.
-
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Store.Models;
 
@@ -9,6 +11,21 @@ public partial class StoreContext : DbContext
     public StoreContext(DbContextOptions<StoreContext> options)
         : base(options)
     {
+        try
+        {
+            var dbCreator = Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
+            if (dbCreator != null)
+            {
+                if (!dbCreator.CanConnect())
+                    dbCreator.Create();
+                if (!dbCreator.HasTables())
+                    dbCreator.CreateTables();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 
     public virtual DbSet<Category> Categories { get; set; }
@@ -19,7 +36,7 @@ public partial class StoreContext : DbContext
     {
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.IdCategory).HasName("PK__Categori__CBD7470613D06136");
+            entity.HasKey(e => e.IdCategory).HasName("PK__Category__CBD7470613D06136");
 
             entity.Property(e => e.NameCategory).HasMaxLength(100);
         });
