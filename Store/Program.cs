@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Store.Models;
+using Store.Services;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,11 @@ builder.Services.AddDbContext<StoreContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddTransient<ActionsService>();
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddTransient<IFileManagerService, FileManagerService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -30,6 +36,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Middleware to access static files in the wwwroot folder
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
