@@ -3,12 +3,13 @@ using Store.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Store.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Store.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductsController : Controller
+    public class ProductsController : ControllerBase
     {
         private readonly StoreContext _context;
         private readonly ActionsService _actionsService;
@@ -294,6 +295,7 @@ namespace Store.Controllers
             return Ok(productsDTO);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult> PostProduct(ProductInsertDTO product)
         {
@@ -308,20 +310,20 @@ namespace Store.Controllers
                 CategoryId = (int)product.CategoryId
             };
 
-            if (product.Fhoto != null)
+            if (product.Photo != null)
             {
                 using (var memoryStream = new MemoryStream())
                 {
                     // We extract the image from the request
-                    await product.Fhoto.CopyToAsync(memoryStream);
+                    await product.Photo.CopyToAsync(memoryStream);
                     // We convert it to a byte array which is what the save method needs.
                     var content = memoryStream.ToArray();
                     // We need the extension to save the file
-                    var extension = Path.GetExtension(product.Fhoto.FileName);
+                    var extension = Path.GetExtension(product.Photo.FileName);
                     // We received the name of the file
                     // The Transient File Manager service instantiates the service and when it is no longer used it is destroyed.
                     newProduct.PhotoUrl = await _fileManagerService.SaveFile(content, extension, "img",
-                        product.Fhoto.ContentType);
+                        product.Photo.ContentType);
                 }
             }
 
@@ -331,6 +333,7 @@ namespace Store.Controllers
             return Created("Product", new { product = newProduct });
         }
 
+        [Authorize]
         [HttpPut("{idProduct:int}")]
         public async Task<IActionResult> PutProduct(int idProduct, [FromBody] ProductUpdateDTO product)
         {
@@ -376,7 +379,7 @@ namespace Store.Controllers
             }
         }
 
-
+        [Authorize]
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {

@@ -7,7 +7,7 @@ namespace Store.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ActionsController : Controller
+    public class ActionsController : ControllerBase
     {
         private readonly StoreContext _context;
 

@@ -10,7 +10,7 @@ namespace Store.DTOs
         public bool Discontinued { get; set; }
         [WeightFileValidation(MaximumWeightInMegaBytes: 4)]
         [ValidationFileType(groupFileType: GroupFileType.Image)]
-        public IFormFile? Fhoto { get; set; }
+        public IFormFile? Photo { get; set; }
         public int? CategoryId { get; set; }
     }
 }
