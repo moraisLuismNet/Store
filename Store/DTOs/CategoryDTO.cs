@@ -4,8 +4,9 @@
     {
         public int IdCategory { get; set; }
 
-        public string NameCategory { get; set; } = null!;
+        public string CategoryName { get; set; } = null!;
 
         public List<ProductDTO> Products { get; set; } = new();
+        public int TotalProducts { get; internal set; }
     }
 }
